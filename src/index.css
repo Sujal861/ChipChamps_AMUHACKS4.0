@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -49,6 +50,10 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Custom badge colors */
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 355.7 100% 97.3%;
   }
 
   .dark {
@@ -87,6 +92,10 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Custom badge colors */
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 144.9 80.4% 10%;
   }
 }
 
@@ -97,5 +106,11 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .badge-success {
+    @apply bg-green-500 text-white;
   }
 }
