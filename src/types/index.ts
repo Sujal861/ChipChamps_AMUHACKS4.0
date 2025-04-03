@@ -12,3 +12,10 @@ export interface URLCheckResult {
     numDashes: number;
   };
 }
+
+export type Theme = 'light' | 'dark' | 'system';
+
+export interface ChromeMessage {
+  action: string;
+  [key: string]: any;
+}
