@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import URLChecker from "@/components/URLChecker";
 import ResultCard from "@/components/ResultCard";
 import HistoryList from "@/components/HistoryList";
@@ -14,6 +14,11 @@ import { useTheme } from "next-themes";
 import { getCurrentTabUrl, getActiveTabInfo, isExtension } from "@/lib/chromeUtils";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import NightSkyBackground from "@/components/NightSkyBackground";
+
+// Performance optimization: Lazy load components that aren't needed immediately
+const LazyHistoryList = lazy(() => import("@/components/HistoryList"));
+const LazySettingsPanel = lazy(() => import("@/components/SettingsPanel"));
 
 const Index = () => {
   const [result, setResult] = useState<URLCheckResult | null>(null);
@@ -52,6 +57,10 @@ const Index = () => {
     
     if (isExtension()) {
       checkActiveTab();
+      // Auto-scan the active tab when the extension loads
+      setTimeout(() => {
+        handleCheckCurrentTab();
+      }, 1000);
     }
   }, []);
 
@@ -85,8 +94,13 @@ const Index = () => {
       return;
     }
     
-    // Set this in the URL checker component
-    // and trigger the check
+    setUrl(activeTab);
+    setTimeout(() => {
+      const urlCheckerForm = document.querySelector("form");
+      if (urlCheckerForm) {
+        urlCheckerForm.dispatchEvent(new Event("submit", { cancelable: true }));
+      }
+    }, 100);
   };
 
   const containerVariants = {
@@ -109,8 +123,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen transition-colors duration-300">
+      {/* Night Sky Background */}
+      <NightSkyBackground />
+      
+      <div className="container mx-auto px-4 py-8 relative z-10">
         <header className="relative mb-8 text-center">
           <div className="absolute right-4 top-0">
             <ThemeToggle />
@@ -126,7 +143,7 @@ const Index = () => {
           </motion.div>
           
           <motion.h1 
-            className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-500 dark:from-blue-400 dark:to-violet-400"
+            className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400"
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -135,7 +152,7 @@ const Index = () => {
           </motion.h1>
           
           <motion.p 
-            className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto"
+            className="mt-2 text-lg text-white/80 max-w-2xl mx-auto"
             initial={{ y: -5, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -145,13 +162,13 @@ const Index = () => {
           
           {isExtension() && tabInfo && (
             <motion.div
-              className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground"
+              className="mt-4 flex items-center justify-center gap-2 text-sm text-white/70"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
               <span>Currently browsing:</span>
-              <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full">
+              <div className="flex items-center gap-1 px-2 py-1 bg-white/10 rounded-full backdrop-blur-sm">
                 {tabInfo.favIconUrl && (
                   <img src={tabInfo.favIconUrl} alt="" className="w-4 h-4" />
                 )}
@@ -184,33 +201,45 @@ const Index = () => {
 
           <motion.div variants={itemVariants} className="transform transition-all duration-500">
             <Tabs defaultValue="history" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="history">History</TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-4 bg-white/10 backdrop-blur-md">
+                <TabsTrigger value="history" className="data-[state=active]:bg-white/20">History</TabsTrigger>
+                <TabsTrigger value="settings" className="data-[state=active]:bg-white/20">Settings</TabsTrigger>
               </TabsList>
               
               <TabsContent value="history" className="mt-0">
-                {history.length > 0 ? (
-                  <HistoryList
-                    history={history}
-                    onSelectResult={handleSelectHistoryItem}
-                    onClearHistory={handleClearHistory}
-                  />
-                ) : (
-                  <div className="text-center py-8 bg-muted/20 rounded-lg border border-border">
-                    <p className="text-muted-foreground">No history yet. Check some URLs to build history.</p>
+                <Suspense fallback={
+                  <div className="text-center py-8 bg-white/5 backdrop-blur-md rounded-lg border border-white/10">
+                    <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
                   </div>
-                )}
+                }>
+                  {history.length > 0 ? (
+                    <LazyHistoryList
+                      history={history}
+                      onSelectResult={handleSelectHistoryItem}
+                      onClearHistory={handleClearHistory}
+                    />
+                  ) : (
+                    <div className="text-center py-8 bg-white/5 backdrop-blur-md rounded-lg border border-white/10">
+                      <p className="text-white/70">No history yet. Check some URLs to build history.</p>
+                    </div>
+                  )}
+                </Suspense>
               </TabsContent>
               
               <TabsContent value="settings" className="mt-0">
-                <SettingsPanel onClearHistory={handleClearHistory} />
+                <Suspense fallback={
+                  <div className="text-center py-8 bg-white/5 backdrop-blur-md rounded-lg border border-white/10">
+                    <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+                  </div>
+                }>
+                  <LazySettingsPanel onClearHistory={handleClearHistory} />
+                </Suspense>
               </TabsContent>
             </Tabs>
           </motion.div>
         </motion.div>
 
-        <footer className="mt-12 text-center text-sm text-muted-foreground">
+        <footer className="mt-12 text-center text-sm text-white/50">
           <p>
             Web Watch Phish uses advanced AI algorithms to analyze URLs for potential phishing threats.
             Always verify the authenticity of websites before sharing sensitive information.
