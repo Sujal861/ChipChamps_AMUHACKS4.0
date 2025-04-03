@@ -1,21 +1,32 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { checkURL } from "@/lib/mockApi";
 import { URLCheckResult } from "@/types";
-import { AlertTriangle, Shield, Link2 } from "lucide-react";
+import { AlertTriangle, Shield, Link2, ExternalLink, Scan } from "lucide-react";
+import { isExtension } from "@/lib/chromeUtils";
+import { motion } from "framer-motion";
 
 interface URLCheckerProps {
   onResultReceived: (result: URLCheckResult) => void;
   isChecking: boolean;
   setIsChecking: (isChecking: boolean) => void;
+  activeTabUrl?: string | null;
 }
 
-const URLChecker = ({ onResultReceived, isChecking, setIsChecking }: URLCheckerProps) => {
+const URLChecker = ({ onResultReceived, isChecking, setIsChecking, activeTabUrl }: URLCheckerProps) => {
   const [url, setUrl] = useState("");
+  const [isScanButtonHovered, setIsScanButtonHovered] = useState(false);
+  
+  // If active tab URL changes, update the input field
+  useEffect(() => {
+    if (activeTabUrl && !url) {
+      setUrl(activeTabUrl);
+    }
+  }, [activeTabUrl, url]);
   
   const validateURL = (input: string): boolean => {
     try {
@@ -51,13 +62,34 @@ const URLChecker = ({ onResultReceived, isChecking, setIsChecking }: URLCheckerP
       setIsChecking(true);
       const result = await checkURL(processedUrl);
       onResultReceived(result);
-      toast.success("URL check completed");
+      
+      // Show appropriate toast based on safety
+      if (result.isSafe) {
+        toast.success("URL appears to be safe");
+      } else {
+        toast.error("Potential phishing threat detected!");
+      }
+      
       setUrl("");
     } catch (error) {
       toast.error("Error checking URL: " + (error as Error).message);
     } finally {
       setIsChecking(false);
     }
+  };
+  
+  const handleScanCurrentTab = async () => {
+    if (!activeTabUrl) {
+      toast.error("No active tab detected");
+      return;
+    }
+    
+    setUrl(activeTabUrl);
+    
+    // Submit the form after a short delay to allow UI update
+    setTimeout(() => {
+      handleSubmit(new Event('submit') as unknown as React.FormEvent);
+    }, 100);
   };
   
   return (
@@ -85,18 +117,40 @@ const URLChecker = ({ onResultReceived, isChecking, setIsChecking }: URLCheckerP
                 </div>
               )}
             </div>
-            <Button 
-              type="submit" 
-              disabled={isChecking} 
-              className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 dark:from-blue-600 dark:to-blue-800 transition-all duration-300 hover:shadow-lg"
-            >
-              {isChecking ? "Analyzing..." : "Check URL"}
-            </Button>
+            
+            <div className="flex gap-2">
+              {isExtension() && (
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={handleScanCurrentTab}
+                  disabled={isChecking || !activeTabUrl}
+                  className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 hover:from-indigo-500/20 hover:to-purple-500/20 dark:from-indigo-500/20 dark:to-purple-500/20 dark:hover:from-indigo-500/30 dark:hover:to-purple-500/30 transition-all duration-300"
+                  onMouseEnter={() => setIsScanButtonHovered(true)}
+                  onMouseLeave={() => setIsScanButtonHovered(false)}
+                >
+                  <motion.div
+                    animate={{ rotate: isScanButtonHovered ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Scan className="h-5 w-5" />
+                  </motion.div>
+                </Button>
+              )}
+              
+              <Button 
+                type="submit" 
+                disabled={isChecking} 
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 dark:from-blue-600 dark:to-blue-800 transition-all duration-300 hover:shadow-lg"
+              >
+                {isChecking ? "Analyzing..." : "Check URL"}
+              </Button>
+            </div>
           </div>
           
           <div className="text-sm text-muted-foreground flex items-center gap-2 dark:text-slate-400">
             <AlertTriangle className="h-4 w-4 text-amber-500" />
-            <p>Enter any URL to check if it's potentially malicious</p>
+            <p>Enter any URL to check if it's potentially malicious or scan your current tab</p>
           </div>
         </form>
       </CardContent>

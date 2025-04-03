@@ -47,6 +47,14 @@
     /* Custom badge colors */
     --success: 142.1 76.2% 36.3%;
     --success-foreground: 355.7 100% 97.3%;
+    
+    /* Additional colors for threat levels */
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 98%;
+    --danger: 0 72% 51%;
+    --danger-foreground: 0 0% 98%;
+    --info: 214 100% 60%;
+    --info-foreground: 214 100% 98%;
   }
 
   .dark {
@@ -89,6 +97,14 @@
     /* Custom badge colors */
     --success: 142.1 70.6% 45.3%;
     --success-foreground: 144.9 80.4% 10%;
+    
+    /* Additional colors for threat levels */
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 15%;
+    --danger: 0 72% 51%;
+    --danger-foreground: 0 0% 98%;
+    --info: 214 100% 60%;
+    --info-foreground: 214 100% 98%;
   }
 }
 
@@ -116,10 +132,69 @@
   }
 
   .hover-float:hover {
-    @apply animate-float;
+    @apply animate-float transform translate-y-[-5px];
   }
 
   .glow-effect {
-    @apply hover:animate-pulse-glow transition-all duration-300;
+    @apply hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300;
+  }
+  
+  .badge-warning {
+    @apply bg-yellow-500 text-white;
+  }
+  
+  .badge-danger {
+    @apply bg-red-500 text-white;
+  }
+  
+  .badge-info {
+    @apply bg-blue-500 text-white;
+  }
+  
+  .neo-button {
+    @apply relative overflow-hidden transition-all duration-300 before:absolute before:inset-0 before:-translate-x-full hover:before:translate-x-0 before:transition-transform before:duration-300 before:bg-gradient-to-r before:from-blue-500/30 before:to-indigo-500/20 before:z-[-1];
+  }
+  
+  .shimmer {
+    @apply relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent;
+  }
+  
+  .skeleton {
+    @apply bg-gray-200 dark:bg-gray-700 animate-pulse;
+  }
+  
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 5px 0 rgba(59, 130, 246, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 15px 5px rgba(59, 130, 246, 0.5);
+    }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
   }
 }

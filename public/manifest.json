@@ -3,7 +3,7 @@
   "manifest_version": 3,
   "name": "Web Watch Phish",
   "version": "1.0.0",
-  "description": "Detect phishing websites with our AI-powered URL analyzer",
+  "description": "Advanced AI-powered phishing detection with real-time tab monitoring",
   "action": {
     "default_popup": "index.html",
     "default_icon": {
@@ -19,7 +19,14 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "tabs", "activeTab"],
+  "host_permissions": [
+    "https://safebrowsing.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   }
