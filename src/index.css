@@ -112,7 +112,11 @@
   }
 
   .animate-float {
-    @apply hover:animate-float transition-all duration-300;
+    @apply transition-all duration-300;
+  }
+
+  .hover-float:hover {
+    @apply animate-float;
   }
 
   .glow-effect {
