@@ -11,7 +11,7 @@ declare global {
       };
       storage?: {
         local?: {
-          get?: (keys: string[], callback: (result: any) => void) => void;
+          get?: (keys: string[] | null, callback: (result: any) => void) => void;
           set?: (items: any, callback?: () => void) => void;
         };
       };
