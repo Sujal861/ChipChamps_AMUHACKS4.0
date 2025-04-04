@@ -1,14 +1,10 @@
-
 import { useState, useEffect, lazy, Suspense } from "react";
 import URLChecker from "@/components/URLChecker";
 import ResultCard from "@/components/ResultCard";
-import HistoryList from "@/components/HistoryList";
-import SettingsPanel from "@/components/SettingsPanel";
 import { URLCheckResult } from "@/types";
 import { Shield, Cog } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { loadHistory, clearHistory } from "@/lib/mockApi";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "next-themes";
 import { getCurrentTabUrl, getActiveTabInfo, isExtension } from "@/lib/chromeUtils";
@@ -123,12 +119,12 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen transition-colors duration-300">
+    <div className="min-h-screen w-full transition-colors duration-300 overflow-x-hidden">
       {/* Night Sky Background */}
       <NightSkyBackground />
       
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        <header className="relative mb-8 text-center">
+      <div className="w-full max-w-6xl mx-auto px-4 py-6 md:py-8 relative z-10">
+        <header className="relative mb-6 md:mb-8 text-center">
           <div className="absolute right-4 top-0">
             <ThemeToggle />
           </div>
@@ -139,11 +135,11 @@ const Index = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <Shield className="h-12 w-12 text-primary animate-float" />
+            <Shield className="h-10 w-10 md:h-12 md:w-12 text-primary animate-float" />
           </motion.div>
           
           <motion.h1 
-            className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400"
+            className="text-2xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400"
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -152,7 +148,7 @@ const Index = () => {
           </motion.h1>
           
           <motion.p 
-            className="mt-2 text-lg text-white/80 max-w-2xl mx-auto"
+            className="mt-2 text-base md:text-lg text-white/80 max-w-2xl mx-auto"
             initial={{ y: -5, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -172,19 +168,19 @@ const Index = () => {
                 {tabInfo.favIconUrl && (
                   <img src={tabInfo.favIconUrl} alt="" className="w-4 h-4" />
                 )}
-                <span className="font-medium truncate max-w-xs">{tabInfo.title || tabInfo.url}</span>
+                <span className="font-medium truncate max-w-[150px] md:max-w-xs">{tabInfo.title || tabInfo.url}</span>
               </div>
             </motion.div>
           )}
         </header>
 
         <motion.div 
-          className="max-w-4xl mx-auto space-y-6"
+          className="w-full mx-auto space-y-6"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          <motion.div variants={itemVariants} className="transform transition-all duration-500 hover:scale-[1.02] glass-card rounded-xl p-1">
+          <motion.div variants={itemVariants} className="transform transition-all duration-500 hover:scale-[1.01] glass-card rounded-xl p-1">
             <URLChecker
               onResultReceived={handleResultReceived}
               isChecking={isChecking}
@@ -239,7 +235,7 @@ const Index = () => {
           </motion.div>
         </motion.div>
 
-        <footer className="mt-12 text-center text-sm text-white/50">
+        <footer className="mt-8 md:mt-12 text-center text-sm text-white/50">
           <p>
             Web Watch Phish uses advanced AI algorithms to analyze URLs for potential phishing threats.
             Always verify the authenticity of websites before sharing sensitive information.

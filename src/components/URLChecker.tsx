@@ -20,6 +20,7 @@ interface URLCheckerProps {
 const URLChecker = ({ onResultReceived, isChecking, setIsChecking, activeTabUrl }: URLCheckerProps) => {
   const [url, setUrl] = useState("");
   const [isScanButtonHovered, setIsScanButtonHovered] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   
   // If active tab URL changes, update the input field
   useEffect(() => {
@@ -60,21 +61,30 @@ const URLChecker = ({ onResultReceived, isChecking, setIsChecking, activeTabUrl 
     
     try {
       setIsChecking(true);
-      const result = await checkURL(processedUrl);
-      onResultReceived(result);
+      setIsAnimating(true);
       
-      // Show appropriate toast based on safety
-      if (result.isSafe) {
-        toast.success("URL appears to be safe");
-      } else {
-        toast.error("Potential phishing threat detected!");
-      }
-      
-      setUrl("");
+      // Add a small delay to show the 3D animation
+      setTimeout(async () => {
+        const result = await checkURL(processedUrl);
+        onResultReceived(result);
+        
+        // Show appropriate toast based on safety
+        if (result.isSafe) {
+          toast.success("URL appears to be safe");
+        } else {
+          toast.error("Potential phishing threat detected!");
+        }
+        
+        setUrl("");
+        setIsAnimating(false);
+      }, 1500);
     } catch (error) {
       toast.error("Error checking URL: " + (error as Error).message);
+      setIsAnimating(false);
     } finally {
-      setIsChecking(false);
+      setTimeout(() => {
+        setIsChecking(false);
+      }, 1500);
     }
   };
   
@@ -93,7 +103,7 @@ const URLChecker = ({ onResultReceived, isChecking, setIsChecking, activeTabUrl 
   };
   
   return (
-    <Card className="w-full max-w-2xl shadow-lg bg-gradient-to-br from-slate-50/90 to-slate-200/80 dark:from-slate-900/80 dark:to-slate-800/70 backdrop-blur-md transition-all duration-300">
+    <Card className="w-full shadow-lg bg-gradient-to-br from-slate-50/90 to-slate-200/80 dark:from-slate-900/80 dark:to-slate-800/70 backdrop-blur-md transition-all duration-300">
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex items-center space-x-2">
@@ -103,17 +113,37 @@ const URLChecker = ({ onResultReceived, isChecking, setIsChecking, activeTabUrl 
           
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-grow group">
-              <Input
-                type="text"
-                placeholder="Enter URL to check (e.g., example.com)"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="pr-10 border-slate-300 dark:border-slate-700 transition-all duration-300 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 group-hover:border-blue-300 dark:group-hover:border-blue-600"
-                disabled={isChecking}
-              />
+              <motion.div
+                initial={false}
+                animate={isAnimating ? { 
+                  rotateY: [0, 180, 360],
+                  scale: [1, 1.05, 1],
+                  z: [0, 30, 0]
+                } : {}}
+                transition={{ 
+                  duration: 1.5, 
+                  ease: "easeInOut",
+                  times: [0, 0.5, 1]
+                }}
+                style={{ transformStyle: "preserve-3d", perspective: 1000 }}
+                className="w-full"
+              >
+                <Input
+                  type="text"
+                  placeholder="Enter URL to check (e.g., example.com)"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="pr-10 border-slate-300 dark:border-slate-700 transition-all duration-300 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 group-hover:border-blue-300 dark:group-hover:border-blue-600"
+                  disabled={isChecking}
+                />
+              </motion.div>
               {isChecking && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+                  <motion.div 
+                    className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  />
                 </div>
               )}
             </div>
