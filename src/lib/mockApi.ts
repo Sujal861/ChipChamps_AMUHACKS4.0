@@ -1,5 +1,5 @@
-
 import { URLCheckResult } from "@/types";
+import { isExtension } from "./chromeUtils";
 
 // List of patterns often found in phishing URLs
 const suspiciousKeywords = [
@@ -141,11 +141,7 @@ const analyzeThreatLevel = (url: string): {
 // Check URL against blacklist via Chrome extension API (if available)
 const checkBlacklist = async (url: string): Promise<boolean> => {
   try {
-    if (typeof window !== 'undefined' && 
-        typeof window.chrome !== 'undefined' && 
-        typeof window.chrome.runtime !== 'undefined' && 
-        typeof window.chrome.runtime.id !== 'undefined') {
-      
+    if (isExtension()) {
       // Check with extension service worker
       const response = await new Promise<any>((resolve) => {
         if (window.chrome?.runtime?.sendMessage) {

@@ -1,28 +1,25 @@
 
 import { ChromeMessage, ExtensionSettings } from "@/types";
 
-// Instead of redeclaring chrome, let's use a type guard and augment Window interface properly
-declare global {
-  interface Window {
-    chrome?: {
-      runtime?: {
-        id?: string;
-        sendMessage?: (message: any, callback: (response: any) => void) => void;
-      };
-      storage?: {
-        local?: {
-          get?: (keys: string[] | null, callback: (result: any) => void) => void;
-          set?: (items: any, callback?: () => void) => void;
-        };
-      };
-      tabs?: {
-        query?: (queryInfo: any, callback: (tabs: any[]) => void) => void;
-      };
-    };
-  }
+// Using module augmentation for the Chrome API types
+// This avoids conflicts with the @types/chrome package
+interface ChromeRuntime {
+  id?: string;
+  sendMessage?: (message: any, callback: (response: any) => void) => void;
 }
 
-// Check if we're running as a Chrome extension
+interface ChromeStorage {
+  local?: {
+    get?: (keys: string[] | null, callback: (result: any) => void) => void;
+    set?: (items: any, callback?: () => void) => void;
+  };
+}
+
+interface ChromeTabs {
+  query?: (queryInfo: any, callback: (tabs: any[]) => void) => void;
+}
+
+// Safely check for Chrome extension environment
 export const isExtension = (): boolean => {
   return typeof window !== 'undefined' && 
          typeof window.chrome !== 'undefined' && 
