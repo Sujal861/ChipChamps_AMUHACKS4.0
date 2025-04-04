@@ -90,13 +90,17 @@ const Index = () => {
       return;
     }
     
-    setUrl(activeTab);
-    setTimeout(() => {
-      const urlCheckerForm = document.querySelector("form");
-      if (urlCheckerForm) {
-        urlCheckerForm.dispatchEvent(new Event("submit", { cancelable: true }));
+    const urlCheckerForm = document.querySelector("form");
+    if (urlCheckerForm) {
+      const urlInput = urlCheckerForm.querySelector('input');
+      if (urlInput) {
+        (urlInput as HTMLInputElement).value = activeTab;
       }
-    }, 100);
+      
+      setTimeout(() => {
+        urlCheckerForm.dispatchEvent(new Event("submit", { cancelable: true }));
+      }, 100);
+    }
   };
 
   const containerVariants = {
@@ -120,7 +124,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen w-full transition-colors duration-300 overflow-x-hidden">
-      {/* Night Sky Background */}
       <NightSkyBackground />
       
       <div className="w-full max-w-6xl mx-auto px-4 py-6 md:py-8 relative z-10">

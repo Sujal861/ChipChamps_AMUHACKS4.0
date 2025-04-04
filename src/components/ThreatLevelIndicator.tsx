@@ -90,11 +90,14 @@ const ThreatLevelIndicator = ({ level, score }: ThreatLevelIndicatorProps) => {
           animate={{ width: "100%" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
+          {/* Updated Progress component to use className for styling instead of indicatorClassName */}
           <Progress 
             value={scorePercentage} 
             className="h-2 bg-gray-200 dark:bg-gray-700" 
-            indicatorClassName={getColorClass()} 
           />
+          {/* Apply the color directly with an absolute positioned div for custom styling */}
+          <div className={`h-2 rounded-full ${getColorClass()} absolute top-0 left-0`} 
+               style={{ width: `${scorePercentage}%`, transform: 'translateY(-100%)' }} />
         </motion.div>
       </div>
     </motion.div>

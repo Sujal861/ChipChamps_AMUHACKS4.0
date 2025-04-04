@@ -1,3 +1,4 @@
+
 import { URLCheckResult } from "@/types";
 
 // List of patterns often found in phishing URLs
@@ -140,12 +141,20 @@ const analyzeThreatLevel = (url: string): {
 // Check URL against blacklist via Chrome extension API (if available)
 const checkBlacklist = async (url: string): Promise<boolean> => {
   try {
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
+    if (typeof window !== 'undefined' && 
+        typeof window.chrome !== 'undefined' && 
+        typeof window.chrome.runtime !== 'undefined' && 
+        typeof window.chrome.runtime.id !== 'undefined') {
+      
       // Check with extension service worker
       const response = await new Promise<any>((resolve) => {
-        chrome.runtime.sendMessage({ action: "checkBlacklist", url }, (response) => {
-          resolve(response);
-        });
+        if (window.chrome?.runtime?.sendMessage) {
+          window.chrome.runtime.sendMessage({ action: "checkBlacklist", url }, (response) => {
+            resolve(response);
+          });
+        } else {
+          resolve({ inBlacklist: false });
+        }
       });
       
       return response?.inBlacklist || false;

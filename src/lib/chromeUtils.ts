@@ -1,9 +1,33 @@
 
 import { ChromeMessage, ExtensionSettings } from "@/types";
 
+// Declare chrome namespace to fix TypeScript errors
+declare global {
+  interface Window {
+    chrome?: {
+      runtime?: {
+        id?: string;
+        sendMessage?: (message: any, callback: (response: any) => void) => void;
+      };
+      storage?: {
+        local?: {
+          get?: (keys: string[], callback: (result: any) => void) => void;
+          set?: (items: any, callback?: () => void) => void;
+        };
+      };
+      tabs?: {
+        query?: (queryInfo: any, callback: (tabs: any[]) => void) => void;
+      };
+    };
+  }
+}
+
 // Check if we're running as a Chrome extension
 export const isExtension = (): boolean => {
-  return window.chrome && chrome.runtime && chrome.runtime.id ? true : false;
+  return typeof window !== 'undefined' && 
+         typeof window.chrome !== 'undefined' && 
+         typeof window.chrome.runtime !== 'undefined' && 
+         typeof window.chrome.runtime.id !== 'undefined';
 };
 
 // Send a message to the Chrome extension background script
@@ -34,9 +58,13 @@ export const sendChromeMessage = async (message: ChromeMessage): Promise<any> =>
   }
 
   return new Promise((resolve) => {
-    chrome.runtime.sendMessage(message, (response) => {
-      resolve(response);
-    });
+    if (window.chrome?.runtime?.sendMessage) {
+      window.chrome.runtime.sendMessage(message, (response) => {
+        resolve(response);
+      });
+    } else {
+      resolve(null);
+    }
   });
 };
 
@@ -58,9 +86,13 @@ export const saveSettings = async (settings: Partial<ExtensionSettings>): Promis
     if (isExtension()) {
       // Save to chrome.storage.local
       return new Promise((resolve) => {
-        chrome.storage.local.set(settings, () => {
-          resolve(true);
-        });
+        if (window.chrome?.storage?.local?.set) {
+          window.chrome.storage.local.set(settings, () => {
+            resolve(true);
+          });
+        } else {
+          resolve(false);
+        }
       });
     } else {
       // Save to localStorage for web mode
@@ -80,12 +112,19 @@ export const getSettings = async (): Promise<Partial<ExtensionSettings>> => {
   try {
     if (isExtension()) {
       return new Promise((resolve) => {
-        chrome.storage.local.get(['autoScanEnabled', 'darkModeEnabled'], (result) => {
-          resolve({
-            autoScanEnabled: result.autoScanEnabled ?? true,
-            darkModeEnabled: result.darkModeEnabled ?? true
+        if (window.chrome?.storage?.local?.get) {
+          window.chrome.storage.local.get(['autoScanEnabled', 'darkModeEnabled'], (result) => {
+            resolve({
+              autoScanEnabled: result.autoScanEnabled ?? true,
+              darkModeEnabled: result.darkModeEnabled ?? true
+            });
           });
-        });
+        } else {
+          resolve({
+            autoScanEnabled: true,
+            darkModeEnabled: true
+          });
+        }
       });
     } else {
       // Get from localStorage for web mode
@@ -114,8 +153,12 @@ export const getActiveTabInfo = async (): Promise<{ url: string; title: string; 
   }
   
   try {
-    const tabs = await new Promise<chrome.tabs.Tab[]>((resolve) => {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (!window.chrome?.tabs?.query) {
+      return null;
+    }
+    
+    const tabs = await new Promise<any[]>((resolve) => {
+      window.chrome!.tabs!.query!({ active: true, currentWindow: true }, (tabs) => {
         resolve(tabs);
       });
     });

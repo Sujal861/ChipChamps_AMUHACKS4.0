@@ -80,8 +80,8 @@ const ResultCard = ({ result }: ResultCardProps) => {
           <div className="flex justify-between items-center">
             <CardTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-700 dark:from-slate-200 dark:to-slate-300">Analysis Results</CardTitle>
             <Badge 
-              variant={isSafe ? "success" : "destructive"} 
-              className="ml-2 shadow-sm"
+              variant={isSafe ? "default" : "destructive"} 
+              className={`ml-2 shadow-sm ${isSafe ? "bg-green-500 hover:bg-green-600" : ""}`}
             >
               {isSafe ? (
                 <motion.span 
