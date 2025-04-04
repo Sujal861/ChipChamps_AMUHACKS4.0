@@ -1,7 +1,7 @@
 
 import { ChromeMessage, ExtensionSettings } from "@/types";
 
-// Declare chrome namespace to fix TypeScript errors
+// Instead of redeclaring chrome, let's use a type guard and augment Window interface properly
 declare global {
   interface Window {
     chrome?: {
