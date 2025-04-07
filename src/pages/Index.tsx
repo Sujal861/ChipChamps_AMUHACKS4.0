@@ -1,4 +1,3 @@
-
 import { useState, useEffect, lazy, Suspense } from "react";
 import URLChecker from "@/components/URLChecker";
 import ResultCard from "@/components/ResultCard";
@@ -13,8 +12,8 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import NightSkyBackground from "@/components/NightSkyBackground";
 import CyberShieldProSection from "@/components/CyberShieldProSection";
+import SplineBackground from "@/components/SplineBackground";
 
-// Performance optimization: Lazy load components that aren't needed immediately
 const LazyHistoryList = lazy(() => import("@/components/HistoryList"));
 const LazySettingsPanel = lazy(() => import("@/components/SettingsPanel"));
 
@@ -55,7 +54,6 @@ const Index = () => {
     
     if (isExtension()) {
       checkActiveTab();
-      // Auto-scan the active tab when the extension loads
       setTimeout(() => {
         handleCheckCurrentTab();
       }, 1000);
@@ -127,6 +125,7 @@ const Index = () => {
   return (
     <div className="min-h-screen w-full transition-colors duration-300 overflow-x-hidden">
       <NightSkyBackground />
+      <SplineBackground />
       
       <div className="w-full max-w-6xl mx-auto px-4 py-6 md:py-8 relative z-10">
         <header className="relative mb-6 md:mb-8 text-center">
@@ -200,7 +199,6 @@ const Index = () => {
             </motion.div>
           )}
           
-          {/* Add CyberShield Pro section */}
           <motion.div variants={itemVariants} className="transform transition-all duration-500 mt-10">
             <CyberShieldProSection />
           </motion.div>

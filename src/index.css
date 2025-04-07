@@ -11,3 +11,13 @@
     color: white;
   }
 }
+
+/* Custom styling for spline-viewer */
+spline-viewer {
+  opacity: 0.8;
+}
+
+/* Make sure the spline model doesn't interfere with user interactions */
+spline-viewer::part(logo) {
+  display: none !important;
+}

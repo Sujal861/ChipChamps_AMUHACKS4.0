@@ -1,10 +1,10 @@
-
 import React, { useState } from "react";
 import { Shield, AlertTriangle, User, LineChart, Link2, Brain, Server, Database, Lock, Bell } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { toast } from "sonner";
 
 const CyberShieldProSection = () => {
   const features = [
@@ -100,6 +100,14 @@ const CyberShieldProSection = () => {
     }
   };
   
+  const handleFeatureClick = (featureTitle: string) => {
+    toast.info(`${featureTitle} feature details coming soon`);
+  };
+  
+  const handleDemoRequest = () => {
+    toast.success("Demo request submitted. Our team will contact you shortly.");
+  };
+  
   return (
     <motion.div 
       className="w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-900/90 to-slate-800/80 border border-white/10 backdrop-blur-lg shadow-xl"
@@ -147,8 +155,9 @@ const CyberShieldProSection = () => {
                 {features.map((feature, index) => (
                   <motion.div 
                     key={index} 
-                    className="bg-white/5 backdrop-blur-md p-4 rounded-lg border border-white/10 hover:bg-white/10 transition-all duration-300"
+                    className="bg-white/5 backdrop-blur-md p-4 rounded-lg border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer"
                     variants={itemVariants}
+                    onClick={() => handleFeatureClick(feature.title)}
                   >
                     <div className="flex items-start gap-3">
                       <div className="p-2 bg-black/30 rounded-md mt-1">
@@ -173,9 +182,9 @@ const CyberShieldProSection = () => {
                   comprehensive threat analytics, customizable alert thresholds, and integration with major social platforms.
                 </p>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <Badge className="bg-blue-500/20 text-blue-300 hover:bg-blue-500/30">Fortune 500 Companies</Badge>
-                  <Badge className="bg-green-500/20 text-green-300 hover:bg-green-500/30">Educational Institutions</Badge>
-                  <Badge className="bg-purple-500/20 text-purple-300 hover:bg-purple-500/30">Government Agencies</Badge>
+                  <Badge className="bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 cursor-pointer" onClick={() => toast.info("Fortune 500 case studies coming soon")}>Fortune 500 Companies</Badge>
+                  <Badge className="bg-green-500/20 text-green-300 hover:bg-green-500/30 cursor-pointer" onClick={() => toast.info("Educational use cases coming soon")}>Educational Institutions</Badge>
+                  <Badge className="bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 cursor-pointer" onClick={() => toast.info("Government deployment details coming soon")}>Government Agencies</Badge>
                 </div>
               </motion.div>
             </TabsContent>
@@ -253,7 +262,10 @@ const CyberShieldProSection = () => {
             <p className="text-xl font-semibold text-white">Starting at $499/month</p>
             <p className="text-white/70">for enterprise deployment</p>
           </div>
-          <Button className="bg-gradient-to-r from-indigo-600 to-indigo-800 hover:from-indigo-700 hover:to-indigo-900 text-white">
+          <Button 
+            className="bg-gradient-to-r from-indigo-600 to-indigo-800 hover:from-indigo-700 hover:to-indigo-900 text-white"
+            onClick={handleDemoRequest}
+          >
             Request Enterprise Demo
           </Button>
         </motion.div>
