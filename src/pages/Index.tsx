@@ -1,3 +1,4 @@
+
 import { useState, useEffect, lazy, Suspense } from "react";
 import URLChecker from "@/components/URLChecker";
 import ResultCard from "@/components/ResultCard";
@@ -11,6 +12,7 @@ import { getCurrentTabUrl, getActiveTabInfo, isExtension } from "@/lib/chromeUti
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import NightSkyBackground from "@/components/NightSkyBackground";
+import CyberShieldProSection from "@/components/CyberShieldProSection";
 
 // Performance optimization: Lazy load components that aren't needed immediately
 const LazyHistoryList = lazy(() => import("@/components/HistoryList"));
@@ -197,6 +199,11 @@ const Index = () => {
               <ResultCard result={result} />
             </motion.div>
           )}
+          
+          {/* Add CyberShield Pro section */}
+          <motion.div variants={itemVariants} className="transform transition-all duration-500 mt-10">
+            <CyberShieldProSection />
+          </motion.div>
 
           <motion.div variants={itemVariants} className="transform transition-all duration-500">
             <Tabs defaultValue="history" className="w-full">
