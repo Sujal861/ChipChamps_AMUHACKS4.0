@@ -6,7 +6,7 @@ import ThreatLevelIndicator from "@/components/ThreatLevelIndicator";
 import { motion } from "framer-motion";
 import { Info, ShieldAlert, ShieldCheck, Link, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ReportPhishingForm } from "./ReportPhishingForm";
+import ReportPhishingForm from "./ReportPhishingForm";  // Changed this line
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ProResultDetails from "./ProResultDetails";
