@@ -1,5 +1,6 @@
+
 import React, { useState } from "react";
-import { Shield, AlertTriangle, User, LineChart, Link2, Brain, Server, Database, Lock, Bell } from "lucide-react";
+import { Shield, AlertTriangle, User, LineChart, Link2, Brain, Server, Database, Lock, Bell, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -55,6 +56,21 @@ const CyberShieldProSection = () => {
         "Sentiment analysis detecting manipulation tactics and emotional pressure",
         "Cross-conversation correlation to identify coordinated predatory activities",
         "Age-appropriate communication modeling with deviation alerts"
+      ]
+    },
+    {
+      icon: <MessageCircle className="h-5 w-5 text-teal-400" />,
+      title: "Advanced Chat Monitoring System",
+      items: [
+        "Real-time message processing with transformer-based neural networks for context understanding",
+        "Multi-layered threat detection using ensemble of specialized models (BERT for semantic analysis, XLNet for context sequences, BART for anomaly detection)",
+        "Text classification with fine-tuned models for cyberbullying, harassment, radicalization, and predatory patterns",
+        "Differential privacy implementation with federated learning to protect user data",
+        "Risk categorization system with configurable thresholds (Low/Medium/High/Critical)",
+        "Contextual alert generation with evidence highlighting and conversation history",
+        "False positive reduction using historical behavioral baselines and reputation systems",
+        "Privacy-preserving detection using edge computing and anonymized processing",
+        "Admin dashboard with configurable alert triggers, notification workflows, and intervention tools"
       ]
     },
     {
@@ -275,3 +291,4 @@ const CyberShieldProSection = () => {
 };
 
 export default CyberShieldProSection;
+
