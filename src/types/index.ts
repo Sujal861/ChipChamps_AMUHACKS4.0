@@ -26,6 +26,14 @@ export interface URLCheckResult {
   };
   apiSource?: "local" | "googleSafeBrowsing" | "openPhish"; // Tracking which API provided the result
   userReported?: boolean; // If this URL was reported by a user
+  proData?: {
+    redirectChainDetected?: boolean;
+    obfuscationMethods?: string[];
+    maliciousPayload?: boolean;
+    domainFirstReported?: Date;
+    reportCount?: number;
+    behavioralAnalysis?: any;
+  };
 }
 
 export type Theme = 'light' | 'dark' | 'system';
@@ -42,6 +50,7 @@ export interface ExtensionSettings {
   privacyMode?: boolean; // New setting for enhanced privacy
   apiPreference?: "googleSafeBrowsing" | "openPhish" | "both"; // Which API to use
   scanFrequency?: "always" | "hourly" | "daily"; // How often to auto-scan
+  useCyberShieldPro?: boolean; // Whether to use the pro features
 }
 
 export interface UserFeedback {
@@ -68,4 +77,45 @@ export interface OpenPhishApiResponse {
   inDatabase: boolean;
   firstSeen?: string;
   lastSeen?: string;
+}
+
+// CyberShield Pro interfaces
+export interface ProSubscription {
+  isActive: boolean;
+  plan: "basic" | "professional" | "enterprise";
+  expiresAt: Date;
+  features: {
+    behavioralAnalysis: boolean;
+    linkInspection: boolean;
+    alertSystem: boolean;
+    apiAccess: boolean;
+    customDashboard: boolean;
+  };
+}
+
+export interface ThreatIntelligenceReport {
+  url: string;
+  analysisDate: Date;
+  threatScore: number;
+  threatLevel: "safe" | "low" | "medium" | "high" | "critical";
+  details: {
+    [key: string]: any;
+  };
+  recommendations: string[];
+}
+
+export interface ConversationAnalysisRequest {
+  messages: {
+    content: string;
+    timestamp: Date;
+    senderId: string;
+    recipientId: string;
+  }[];
+  context?: {
+    platform: string;
+    userAges?: {
+      [userId: string]: number;
+    };
+    relationshipType?: string;
+  };
 }

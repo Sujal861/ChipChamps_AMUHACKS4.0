@@ -1,5 +1,7 @@
-import { URLCheckResult } from "@/types";
+import { URLCheckResult, ProSubscription } from "@/types";
 import { isExtension } from "./chromeUtils";
+import { cyberShieldProCheck } from "./linkAnalysisEngine";
+import { generateUrlCheckAlert } from "./alertingSystem";
 
 // List of patterns often found in phishing URLs
 const suspiciousKeywords = [
@@ -164,7 +166,58 @@ const checkBlacklist = async (url: string): Promise<boolean> => {
   }
 };
 
+// Mock Pro subscription status
+let proSubscriptionActive = true; // Set to true to simulate having active subscription
+
+// Get CyberShield Pro subscription status
+export const getCyberShieldProSubscription = (): ProSubscription => {
+  return {
+    isActive: proSubscriptionActive,
+    plan: "enterprise",
+    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+    features: {
+      behavioralAnalysis: true,
+      linkInspection: true,
+      alertSystem: true,
+      apiAccess: true,
+      customDashboard: true
+    }
+  };
+};
+
+// Set CyberShield Pro subscription status (for demo purposes)
+export const setCyberShieldProStatus = (isActive: boolean): void => {
+  proSubscriptionActive = isActive;
+};
+
+// Main function to check URL safety
 export const checkURL = async (url: string): Promise<URLCheckResult> => {
+  // Check if we should use the Pro version
+  const useProVersion = proSubscriptionActive && Math.random() > 0.3; // Occasionally use basic version for comparison
+  
+  // If using pro version, delegate to the Pro check function
+  if (useProVersion) {
+    try {
+      console.log("Using CyberShield Pro for enhanced analysis");
+      const proResult = await cyberShieldProCheck(url);
+      
+      // Create an alert for medium or high threats
+      if (proResult.threatLevel === "medium" || proResult.threatLevel === "high") {
+        generateUrlCheckAlert(url, proResult.threatLevel, proResult.score, {
+          scanType: "CyberShield Pro",
+          features: proResult.features,
+          proData: proResult.proData
+        });
+      }
+      
+      return proResult;
+    } catch (error) {
+      console.error("Error in Pro analysis, falling back to standard:", error);
+      // Fall back to standard analysis if Pro fails
+    }
+  }
+  
+  // Standard analysis (existing code)
   // Simulate API call delay
   await new Promise(resolve => setTimeout(resolve, 1500));
   
@@ -279,4 +332,22 @@ export const clearHistory = (): void => {
   } catch (error) {
     console.error('Error clearing localStorage:', error);
   }
+};
+
+// New function to toggle CyberShield Pro status for demo
+export const toggleCyberShieldPro = async (): Promise<{
+  active: boolean;
+  message: string;
+}> => {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 800));
+  
+  proSubscriptionActive = !proSubscriptionActive;
+  
+  return {
+    active: proSubscriptionActive,
+    message: proSubscriptionActive 
+      ? "CyberShield Pro activated successfully!"
+      : "CyberShield Pro deactivated. Using standard protection."
+  };
 };
